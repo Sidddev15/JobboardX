@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -11,7 +12,14 @@ app.use(morgan('dev')); //log request method + URL for debugging
 
 // test route 
 app.get('/api/health', (req,res) => {
-  res.json({status: 'Okay', message: 'Server is runnning'});
+  const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+  const dbState = states[mongoose.connection.readyState] || 'unknown';
+  res.json({
+    status: 'OK',
+    server: 'running',
+    db: dbState,
+    time: new Date().toISOString(),
+  });
 });
 
 module.exports = app;
